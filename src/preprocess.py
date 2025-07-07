@@ -5,9 +5,19 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 
-def load_and_preprocess(path: str) -> Tuple[pd.DataFrame, pd.Series, Pipeline]:
-    df = pd.read_excel("data/warfarin_data.xls", sheet_name="Subject Data")
+def convert_age(age_str):
+    if isinstance(age_str, str) and '-' in age_str:
+        parts = age_str.split('-')
+        return (int(parts[0]) + int(parts[1])) / 2
+    try:
+        return float(age_str)
+    except:
+        return None
+
+def load_and_preprocess(path: str) -> Tuple[pd.DataFrame, pd.Series, ColumnTransformer]:
+    df = pd.read_excel(path, sheet_name="Subject Data")
     df = df.dropna(subset=["Therapeutic Dose of Warfarin"])
+
     features = [
         # Demographics
         "Age", "Height (cm)", "Weight (kg)", "Gender", "Race (Reported)", "Ethnicity (Reported)",
@@ -22,23 +32,30 @@ def load_and_preprocess(path: str) -> Tuple[pd.DataFrame, pd.Series, Pipeline]:
         # Lab & target
         "Target INR", "INR on Reported Therapeutic Dose of Warfarin"
     ]
+
     required = features + ["Therapeutic Dose of Warfarin"]
     df = df[required]
+
+    df["Age"] = df["Age"].apply(convert_age)
+
     X = df[features]
     y = df["Therapeutic Dose of Warfarin"]
+
     numeric_features = ["Age", "Height (cm)", "Weight (kg)"]
+    categorical_features = ["Gender", "Race (Reported)", "Amiodarone (Cordarone)", "Diabetes", "Current Smoker"]
+
     numeric_transformer = Pipeline([
         ("imputer", SimpleImputer(strategy="mean")),
         ("scaler", StandardScaler())
     ])
-    categorical_features = ["Gender", "Race (Reported)", "Amiodarone (Cordarone)", "Diabetes", "Current Smoker"]
     categorical_transformer = Pipeline([
         ("imputer", SimpleImputer(strategy="most_frequent")),
         ("onehot", OneHotEncoder(handle_unknown="ignore"))
     ])
+
     preprocessor = ColumnTransformer([
         ("num", numeric_transformer, numeric_features),
         ("cat", categorical_transformer, categorical_features)
     ])
-    X_processed = preprocessor.fit_transform(X)
-    return X_processed, y, preprocessor
+
+    return X, y, preprocessor
