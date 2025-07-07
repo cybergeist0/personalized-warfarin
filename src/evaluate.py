@@ -25,4 +25,7 @@ def plot_feature_importance(model, preprocessor):
     indices = np.argsort(importances)[::-1]
     plt.figure(figsize=(10, 6))
     plt.title("Feature Importances")
-    
+    plt.bar(range(len(importances)), importances[indices], align="center")
+    plt.xticks(range(len(importances)), np.array(feature_names)[indices], rotation=90)
+    plt.tight_layout()
+    plt.show()
