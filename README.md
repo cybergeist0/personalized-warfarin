@@ -1,4 +1,4 @@
-# Personalized Warfarin Dosage Reccomender
+# Personalized Warfarin Dosage Recomender
 
 A machine learning web app built with **scikit-learn** and **Streamlit** that predicts personalized therapeutic doses of Warfarin (a common blood thinner) based on clinical, demographic, and lifestyle data.
 
