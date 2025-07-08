@@ -36,8 +36,8 @@ This app uses a trained **Random Forest Regressor** to provide data-driven dose 
 
 ### 1. Clone this repo
 ```bash
-git clone https://github.com/yourusername/warfarin-dose-predictor.git
-cd warfarin-dose-predictor
+git clone https://github.com/cybergeist0/personalized-warfarin.git
+cd personalized-warfarin
 ```
 ### 2. Set up Python environment
 ```bash
@@ -51,5 +51,6 @@ pip install -r requirements.txt
 ### 4. Run the app
 ```bash
 # Ensure `warfarin_data.xls` is in the `data/` folder
+python3 ./main.py # On Windows: python main.py
 streamlit run app.py
 ```
